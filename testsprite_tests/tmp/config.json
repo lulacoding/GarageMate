@@ -1,0 +1,18 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:8090",
+  "executionArgs": {
+    "projectName": "GarageMate",
+    "projectPath": "C:/Users/cthvh/OneDrive - RMIT University/CODE/GarageMate",
+    "testIds": [],
+    "additionalInstruction": "Baseline scan — all screens are placeholders. Server is on port 8090. This is a single-page Expo Router app; all deep routes resolve via SPA fallback to index.html.",
+    "serverMode": "production",
+    "envs": {
+      "API_KEY": "sk-user-IvMfrIp3gyOYjkqxM0EfpNguRQu4AAnjyf1TZI8scEN_amDtlxT5106NCteZ9Yx7wJFkIOQoFjQDwV7n1WXjrjX6WxHL7RYl1s6OC18YDUNSgq8hH_uR4DFP1GkBiXC76Iw"
+    }
+  },
+  "serverPort": 58667,
+  "proxy": "http://8ec5cc9b-babb-42fa-9252-aa8725a9bdd0:nlHBHEKYu6kRzh63olQCvQh8UuUfrnOM@tun.testsprite.com:8080"
+}

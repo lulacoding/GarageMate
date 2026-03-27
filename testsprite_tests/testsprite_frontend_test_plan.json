@@ -1,0 +1,330 @@
+[
+  {
+    "id": "TC001",
+    "title": "App loads to login placeholder without crashing (baseline smoke)",
+    "description": "Verifies the app can load a concrete route and render placeholder UI without an error screen.",
+    "category": "Firebase Initialisation",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to \"/(auth)/login\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/(auth)/login\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify page title contains \"GarageMate\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Login\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "Navigate from login to register placeholder (navigation not blocked by Firebase init)",
+    "description": "Verifies the user can reach the register placeholder screen from the login screen after app load.",
+    "category": "Firebase Initialisation",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to \"/(auth)/login\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Register\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/(auth)/register\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Register\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "Authenticated tab route renders its placeholder UI (Firebase init does not break shell)",
+    "description": "Verifies a tabs route can render its placeholder screen content without a visible crash screen.",
+    "category": "Firebase Initialisation",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to \"/(tabs)/index\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/(tabs)/index\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify page title contains \"GarageMate\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Home\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Map tab placeholder loads (no visible backend error banner on load)",
+    "description": "Verifies the map placeholder screen renders and no generic backend-unavailable banner is shown immediately on load.",
+    "category": "Firebase Initialisation",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to \"/(tabs)/map\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/(tabs)/map\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Map\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Error\" is not visible"
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Add listing tab placeholder loads (no visible Firebase init failure screen)",
+    "description": "Verifies the add listing placeholder screen renders without showing a visible fatal initialization error message.",
+    "category": "Firebase Initialisation",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to \"/(tabs)/add\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/(tabs)/add\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Add\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Backend unavailable\" is not visible"
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Saved tab placeholder loads (app remains stable after initial load)",
+    "description": "Verifies the saved listings placeholder screen renders and the app stays responsive post-load.",
+    "category": "Firebase Initialisation",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to \"/(tabs)/saved\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/(tabs)/saved\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Saved\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Wait for \"Saved\" to be visible"
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "Profile tab placeholder loads (no visible initialization error banner)",
+    "description": "Verifies the profile placeholder screen renders and no visible error banner indicates Firebase failed to initialize.",
+    "category": "Firebase Initialisation",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to \"/(tabs)/profile\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/(tabs)/profile\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Profile\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Firebase\" is not visible"
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Tab bar is present on Home screen",
+    "description": "Verifies the main tab navigator shell renders on the Home route.",
+    "category": "Root Navigation Shell",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /(tabs)/index"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/(tabs)/index\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Home\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Map\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Add\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Saved\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Profile\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "Navigate Home -> Map via tab click",
+    "description": "Verifies selecting the Map tab from Home transitions to the Map route.",
+    "category": "Root Navigation Shell",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /(tabs)/index"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Map\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Map\" tab"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/(tabs)/map\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Map\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "Navigate Map -> Add via tab click",
+    "description": "Verifies selecting the Add tab from Map transitions to the Add route.",
+    "category": "Root Navigation Shell",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /(tabs)/map"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Add\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Add\" tab"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/(tabs)/add\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Add\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Navigate Add -> Saved via tab click",
+    "description": "Verifies selecting the Saved tab from Add transitions to the Saved route.",
+    "category": "Root Navigation Shell",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /(tabs)/add"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Saved\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Saved\" tab"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/(tabs)/saved\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Saved\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "Navigate Saved -> Profile via tab click",
+    "description": "Verifies selecting the Profile tab from Saved transitions to the Profile route.",
+    "category": "Root Navigation Shell",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /(tabs)/saved"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Profile\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Profile\" tab"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/(tabs)/profile\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Profile\" is visible"
+      }
+    ]
+  }
+]

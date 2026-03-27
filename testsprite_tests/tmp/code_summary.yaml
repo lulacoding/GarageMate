@@ -1,0 +1,68 @@
+version: "2"
+type: frontend
+tech_stack:
+  - language: TypeScript
+  - framework: Expo SDK 55 / React Native (iOS, Android, Web)
+  - navigation: Expo Router (file-based)
+  - backend: Firebase JS SDK v10 (Auth, Firestore, Storage)
+  - ui_library: React Native core components
+  - geo: geofire-common (geohash radius queries)
+  - maps_native: react-native-maps
+  - maps_web: react-leaflet
+  - testing: jest-expo, @testing-library/react-native
+routes:
+  - path: /(auth)/login
+    file: app/(auth)/login.tsx
+    auth_required: false
+    description: Login placeholder (Plan 01 baseline — full implementation in Plan 02)
+  - path: /(auth)/register
+    file: app/(auth)/register.tsx
+    auth_required: false
+    description: Register placeholder (full implementation in Plan 02)
+  - path: /(tabs)/index
+    file: app/(tabs)/index.tsx
+    auth_required: true
+    description: Home screen placeholder — shows nearby listings (Plan 03)
+  - path: /(tabs)/map
+    file: app/(tabs)/map.tsx
+    auth_required: true
+    description: Map screen placeholder — garage sale map (Plan 04)
+  - path: /(tabs)/add
+    file: app/(tabs)/add.tsx
+    auth_required: true
+    description: Add listing placeholder (Plan 05)
+  - path: /(tabs)/saved
+    file: app/(tabs)/saved.tsx
+    auth_required: true
+    description: Saved listings placeholder (Plan 06)
+  - path: /(tabs)/profile
+    file: app/(tabs)/profile.tsx
+    auth_required: true
+    description: Profile screen placeholder (Plan 06)
+features:
+  - name: Firebase Initialisation
+    description: Firebase app, auth, Firestore, and Storage initialised once via lib/firebase.ts
+    files:
+      - lib/firebase.ts
+    entry_route: /(tabs)/index
+    user_interactions:
+      - App loads and Firebase initialises silently
+    api_calls: []
+    auth_required: false
+  - name: Root Navigation Shell
+    description: Expo Router stack with auth group and tabs group. Placeholder screens on all routes.
+    files:
+      - app/_layout.tsx
+      - app/(tabs)/_layout.tsx
+    entry_route: /(tabs)/index
+    user_interactions:
+      - Navigate between 5 tab screens (Home, Map, Add, Saved, Profile)
+    api_calls: []
+    auth_required: false
+known_limitations:
+  - issue: All screens are placeholders — no real UI or logic yet (Plans 02-06 implement them)
+    location: app/(tabs)/, app/(auth)/
+    impact: Only navigation shell and Firebase init are testable at this stage
+  - issue: Firebase credentials are placeholder values — real API calls will fail
+    location: .env.local
+    impact: Firebase Auth/Firestore/Storage will not work until real keys are provided
