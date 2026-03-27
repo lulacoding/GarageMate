@@ -4,10 +4,9 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter, Link } from 'expo-router';
 import { auth } from '@/lib/firebase';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
-import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithCredential, signInWithPopup, OAuthProvider } from 'firebase/auth';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Crypto from 'expo-crypto';
-import { OAuthProvider } from 'firebase/auth';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -47,13 +46,18 @@ export default function LoginScreen() {
     setLoading(true);
     setError('');
     try {
-      await GoogleSignin.hasPlayServices();
-      const userInfo = await GoogleSignin.signIn();
-      const credential = GoogleAuthProvider.credential(userInfo.idToken);
-      await signInWithCredential(auth, credential);
+      if (Platform.OS === 'web') {
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+      } else {
+        await GoogleSignin.hasPlayServices();
+        const userInfo = await GoogleSignin.signIn();
+        const credential = GoogleAuthProvider.credential(userInfo.idToken);
+        await signInWithCredential(auth, credential);
+      }
       router.replace('/(tabs)');
     } catch (e: any) {
-      if (e.code !== statusCodes.SIGN_IN_CANCELLED) {
+      if (e.code !== statusCodes.SIGN_IN_CANCELLED && e.code !== 'auth/popup-closed-by-user') {
         setError('Google sign-in failed. Please try again.');
       }
     } finally {

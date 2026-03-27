@@ -4,16 +4,19 @@ import {
   Image, StyleSheet, ActivityIndicator, Alert, Platform
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { Timestamp } from 'firebase/firestore';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { auth } from '@/lib/firebase';
 import { uploadListingImages, createListing, updateListing } from '@/lib/listings';
 import { validateListingForm } from '@/lib/validation';
-import Constants from 'expo-constants';
 
-const PLACES_KEY = Constants.expoConfig?.extra?.googlePlacesApiKey ?? '';
+// Native-only imports — not loaded on web
+let DateTimePicker: any = null;
+let GooglePlacesAutocomplete: any = null;
+if (Platform.OS !== 'web') {
+  DateTimePicker = require('@react-native-community/datetimepicker').default;
+  GooglePlacesAutocomplete = require('react-native-google-places-autocomplete').GooglePlacesAutocomplete;
+}
 
 export default function AddListingScreen() {
   const router = useRouter();
@@ -137,31 +140,50 @@ export default function AddListingScreen() {
       <TextInput style={[styles.input, styles.multiline]} placeholder="Description" value={description} onChangeText={setDescription} multiline numberOfLines={4} />
       {errors.description && <Text style={styles.error}>{errors.description}</Text>}
 
-      <GooglePlacesAutocomplete
-        placeholder="Search address"
-        onPress={(data, details) => {
-          if (!details) return;
-          setAddress(data.description);
-          setLat(details.geometry.location.lat);
-          setLng(details.geometry.location.lng);
-        }}
-        query={{ key: PLACES_KEY, language: 'en' }}
-        fetchDetails
-        styles={{ container: { marginBottom: 12 }, textInput: styles.input }}
-      />
+      {Platform.OS === 'web' ? (
+        <TextInput
+          style={styles.input}
+          placeholder="Enter address"
+          value={address}
+          onChangeText={setAddress}
+        />
+      ) : (
+        GooglePlacesAutocomplete && (
+          <GooglePlacesAutocomplete
+            placeholder="Search address"
+            onPress={(data: any, details: any) => {
+              if (!details) return;
+              setAddress(data.description);
+              setLat(details.geometry.location.lat);
+              setLng(details.geometry.location.lng);
+            }}
+            query={{ key: '', language: 'en' }}
+            fetchDetails
+            styles={{ container: { marginBottom: 12 }, textInput: styles.input }}
+          />
+        )
+      )}
       {errors.address && <Text style={styles.error}>{errors.address}</Text>}
 
       {isEdit && startDate < new Date() ? (
         <View style={[styles.input, { backgroundColor: '#f3f4f6' }]}>
           <Text style={{ color: '#9ca3af' }}>{`Start: ${startDate.toLocaleDateString('en-AU')} (cannot change — sale already started)`}</Text>
         </View>
+      ) : Platform.OS === 'web' ? (
+        <View style={styles.input}>
+          <Text style={{ marginBottom: 4, color: '#6b7280', fontSize: 12 }}>Start Date</Text>
+          {/* @ts-ignore */}
+          <input type="date" value={startDate.toISOString().split('T')[0]} min={new Date().toISOString().split('T')[0]}
+            onChange={(e: any) => { if (e.target.value) setStartDate(new Date(e.target.value + 'T00:00:00')); }}
+            style={{ border: 'none', outline: 'none', fontSize: 15, width: '100%' }} />
+        </View>
       ) : (
         <TouchableOpacity style={styles.input} onPress={() => setShowStartDate(true)}>
           <Text>{`Start: ${startDate.toLocaleDateString('en-AU')}`}</Text>
         </TouchableOpacity>
       )}
-      {showStartDate && (
-        <DateTimePicker value={startDate} mode="date" minimumDate={new Date()} onChange={(_, d) => { setShowStartDate(false); if (d) setStartDate(d); }} />
+      {showStartDate && Platform.OS !== 'web' && DateTimePicker && (
+        <DateTimePicker value={startDate} mode="date" minimumDate={new Date()} onChange={(_: any, d: any) => { setShowStartDate(false); if (d) setStartDate(d); }} />
       )}
       {errors.startDate && <Text style={styles.error}>{errors.startDate}</Text>}
 
@@ -170,29 +192,59 @@ export default function AddListingScreen() {
       </TouchableOpacity>
       {endDate && (
         <>
-          <TouchableOpacity style={styles.input} onPress={() => setShowEndDate(true)}>
-            <Text>{`End: ${endDate.toLocaleDateString('en-AU')}`}</Text>
-          </TouchableOpacity>
-          {showEndDate && (
-            <DateTimePicker value={endDate} mode="date" minimumDate={new Date(startDate.getTime() + 86400000)} onChange={(_, d) => { setShowEndDate(false); if (d) setEndDate(d); }} />
+          {Platform.OS === 'web' ? (
+            <View style={styles.input}>
+              <Text style={{ marginBottom: 4, color: '#6b7280', fontSize: 12 }}>End Date</Text>
+              {/* @ts-ignore */}
+              <input type="date" value={endDate.toISOString().split('T')[0]}
+                min={new Date(startDate.getTime() + 86400000).toISOString().split('T')[0]}
+                onChange={(e: any) => { if (e.target.value) setEndDate(new Date(e.target.value + 'T00:00:00')); }}
+                style={{ border: 'none', outline: 'none', fontSize: 15, width: '100%' }} />
+            </View>
+          ) : (
+            <TouchableOpacity style={styles.input} onPress={() => setShowEndDate(true)}>
+              <Text>{`End: ${endDate.toLocaleDateString('en-AU')}`}</Text>
+            </TouchableOpacity>
+          )}
+          {showEndDate && Platform.OS !== 'web' && DateTimePicker && (
+            <DateTimePicker value={endDate} mode="date" minimumDate={new Date(startDate.getTime() + 86400000)} onChange={(_: any, d: any) => { setShowEndDate(false); if (d) setEndDate(d); }} />
           )}
         </>
       )}
       {errors.endDate && <Text style={styles.error}>{errors.endDate}</Text>}
 
       <View style={styles.timeRow}>
-        <TouchableOpacity style={[styles.input, { flex: 1 }]} onPress={() => setShowStartTime(true)}>
-          <Text>Start: {startTime}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.input, { flex: 1, marginLeft: 8 }]} onPress={() => setShowEndTime(true)}>
-          <Text>End: {endTime}</Text>
-        </TouchableOpacity>
+        {Platform.OS === 'web' ? (
+          <>
+            <View style={[styles.input, { flex: 1 }]}>
+              <Text style={{ marginBottom: 2, color: '#6b7280', fontSize: 12 }}>Start Time</Text>
+              {/* @ts-ignore */}
+              <input type="time" value={startTime} onChange={(e: any) => setStartTime(e.target.value)}
+                style={{ border: 'none', outline: 'none', fontSize: 15, width: '100%' }} />
+            </View>
+            <View style={[styles.input, { flex: 1, marginLeft: 8 }]}>
+              <Text style={{ marginBottom: 2, color: '#6b7280', fontSize: 12 }}>End Time</Text>
+              {/* @ts-ignore */}
+              <input type="time" value={endTime} onChange={(e: any) => setEndTime(e.target.value)}
+                style={{ border: 'none', outline: 'none', fontSize: 15, width: '100%' }} />
+            </View>
+          </>
+        ) : (
+          <>
+            <TouchableOpacity style={[styles.input, { flex: 1 }]} onPress={() => setShowStartTime(true)}>
+              <Text>Start: {startTime}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.input, { flex: 1, marginLeft: 8 }]} onPress={() => setShowEndTime(true)}>
+              <Text>End: {endTime}</Text>
+            </TouchableOpacity>
+          </>
+        )}
       </View>
-      {showStartTime && (
-        <DateTimePicker value={timeStringToDate(startTime)} mode="time" is24Hour onChange={(_, d) => { setShowStartTime(false); if (d) setStartTime(dateToTimeString(d)); }} />
+      {showStartTime && Platform.OS !== 'web' && DateTimePicker && (
+        <DateTimePicker value={timeStringToDate(startTime)} mode="time" is24Hour onChange={(_: any, d: any) => { setShowStartTime(false); if (d) setStartTime(dateToTimeString(d)); }} />
       )}
-      {showEndTime && (
-        <DateTimePicker value={timeStringToDate(endTime)} mode="time" is24Hour onChange={(_, d) => { setShowEndTime(false); if (d) setEndTime(dateToTimeString(d)); }} />
+      {showEndTime && Platform.OS !== 'web' && DateTimePicker && (
+        <DateTimePicker value={timeStringToDate(endTime)} mode="time" is24Hour onChange={(_: any, d: any) => { setShowEndTime(false); if (d) setEndTime(dateToTimeString(d)); }} />
       )}
       {errors.endTime && <Text style={styles.error}>{errors.endTime}</Text>}
 

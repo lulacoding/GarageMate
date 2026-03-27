@@ -4,6 +4,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { View, ActivityIndicator } from 'react-native';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import Constants from 'expo-constants';
+import { signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 
 export default function RootLayout() {
   const { user, loading } = useAuth();
@@ -21,7 +23,9 @@ export default function RootLayout() {
     const inAuthGroup = segments[0] === '(auth)';
     if (!user && !inAuthGroup) {
       router.replace('/(auth)/login');
-    } else if (user && inAuthGroup) {
+    } else if (user && !user.emailVerified && !inAuthGroup) {
+      signOut(auth).then(() => router.replace('/(auth)/login'));
+    } else if (user && user.emailVerified && inAuthGroup) {
       router.replace('/(tabs)');
     }
   }, [user, loading, segments]);
