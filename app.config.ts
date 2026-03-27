@@ -25,6 +25,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         androidGoogleMapsApiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_ANDROID_KEY,
       },
     ],
+    '@react-native-community/datetimepicker',
   ],
   scheme: 'garagemate',
   web: { bundler: 'metro' },
